@@ -1,13 +1,29 @@
-
-#include "utility.h"
-
+#include <string>
+#include <iostream>
+#include <unistd.h>
+#include <ApplicationServices/ApplicationServices.h>
+#include <thread>
+#include <map>
+#include <stdio.h>
+#include <stdlib.h>
+#include <mach/mach_traps.h>
+#include <mach/mach_init.h>
+#include <mach/mach_error.h>
+#include <mach/mach.h>
+#include <mach-o/dyld_images.h>
+#include <mach-o/loader.h>
+#include <libproc.h>
+#include <sys/stat.h>
 
 using namespace std;
 
 
 class Process
 {
-public:
+
+
+
+private:
 	int get(const char * procname)
 	{
 		pid_t pids[1024];
@@ -33,7 +49,11 @@ public:
 		
 		return task;
 	}
+public:
 	
+    pid_t   mainPid = get("csgo_osx64");
+    task_t  mainTask = task(mainPid);
+
 	void getModule(task_t task, mach_vm_address_t * start, off_t * length, const char * module, Byte * buffer = nullptr, bool readBuffer = false)
 	{
 		struct task_dyld_info dyld_info;
@@ -91,12 +111,13 @@ public:
 	}
 };
 
-Process * g_cProc = new Process();
 
 class MemMngr
 {
 	
 public:
+    Process * g_cProc = new Process();
+
 	template <typename type>
 	type read(mach_vm_address_t address, size_t extraSize = sizeof(type))
 	{
@@ -104,7 +125,7 @@ public:
 		
 		vm_offset_t data;
 		uint32_t size;
-		auto callback = vm_read(mainTask, (vm_address_t)address, extraSize, &data, &size);
+		auto callback = vm_read(g_cProc->mainTask, (vm_address_t)address, extraSize, &data, &size);
 		if(callback == KERN_SUCCESS)
 		{
 			content = (type) *(type *)(data);
@@ -123,7 +144,7 @@ public:
 			return false;
 		}
 		
-		auto callback = vm_write(mainTask, address, (vm_offset_t)&data, sizeof(data));
+		auto callback = vm_write(g_cProc->mainTask, address, (vm_offset_t)&data, sizeof(data));
 		if (callback == KERN_SUCCESS)
 		{
 			return true;
@@ -136,5 +157,7 @@ public:
 	
 };
 
+
 MemMngr * mem = new MemMngr();
+
 
