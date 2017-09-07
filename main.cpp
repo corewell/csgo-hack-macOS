@@ -2,16 +2,16 @@
 
 void assignOffsets()
 {
-	Offsets["m_iGlowIndex"] = 0xAC10;
-	Offsets["GlowInfoOffset"] = 0x1983690;
-	Offsets["PlayerBase"] = 0x111bc38;
-	Offsets["LocalPlayer"] = 0x110fa68;
+	Offsets["m_iGlowIndex"] = 0xABF0;
+	Offsets["GlowInfoOffset"] = 0x196fa70;
+	Offsets["PlayerBase"] = 0x1108018;
+	Offsets["LocalPlayer"] = 0x10fbe18;
 	Offsets["m_iHealth"] = 0x134;
 	Offsets["m_iTeamNum"] = 0x128;
-	Offsets["inCross"] = 0xbbd8;
-	Offsets["inAttack"] = 0x1A76D80;
+	Offsets["inCross"] = 0xBBB8;
+	Offsets["inAttack"] = 0x1A60F40;
 	Offsets["m_iFlashDuration"] = 0xABF8;
-	Offsets["inAlt1"] = 0x1988928;
+	Offsets["inAlt1"] = 0x1974D08;
 }
 
 int main(int argc, const char * argv[])
@@ -43,7 +43,7 @@ int main(int argc, const char * argv[])
 	{
 		uint64_t playerAddress = mem->read<uint64_t>(moduleStartAddress + Offsets["LocalPlayer"]);
 
-		noFlash(moduleStartAddress, playerAddress);
+		//noFlash(moduleStartAddress, playerAddress);
 		Glow(moduleStartAddress, glowObjectLoopStartAddress, playerAddress);
 		
 		int inTrigger = mem->read<int>(moduleStartAddress + Offsets["inAlt1"]);
